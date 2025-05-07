@@ -8,7 +8,7 @@ def verify_user(user_id,password):
     try:
         df = pd.read_csv(filename, dtype=str)  # use pandas to read the CSV file in string format
     except FileNotFoundError:
-        print("No user data found. Please register first.")
+        print("\nNo user data found. Please register first.")
         return False
     # try whether the file exists, if not, print out the error message and return false
     
@@ -48,14 +48,14 @@ def register_new_user(user_id, ic_number):
         is_empty = not file_exists or os.path.getsize(filename) == 0
 
         new_user.to_csv(filename, mode='a', header=is_empty, index=False)
-        print(f"{user_id} registered successfully!")
+        print(f"\n{user_id} registered successfully!")
         return True
     else:
-        print("User ID already exists. Please choose a different ID and try again.")
+        print("\nUser ID already exists. Please choose a different ID and try again.")
         return False
 
 def find_user_ic(user_id):
-    """根据用户ID查找IC号码"""
+    """according to the user ID, find the IC number of the user"""
     df = pd.read_csv(filename, dtype=str)  # read the CSV file in string format
     user_row = df[df["UserID"] == user_id]  # filter the dataframe to find the row with the given user_id
     if not user_row.empty:  # make sure the user exists
@@ -63,7 +63,7 @@ def find_user_ic(user_id):
         return ic # return the IC number
     
 def calculate_tax(income, tax_relief):
-    """根据收入和税收减免计算应缴税款"""
+    """according to the income and tax relief, calculate the tax amount"""
     taxable_income = income - tax_relief  # calculate taxable income
 
     # calculate tax based on taxable income
@@ -81,16 +81,16 @@ def calculate_tax(income, tax_relief):
     return tax #return the tax amount
 
 def save_to_csv(data):
-    """将数据保存到CSV文件"""
+    """save the data to a CSV file"""
     df = pd.DataFrame([data])  # transform the data into a DataFrame
     try:
         df.to_csv(filename, mode='a', header=False, index=False)  # add the data to the CSV file
-        print("Data saved successfully!")
+        print("\nData saved successfully!")
     except Exception as e:
-        print(f"Error saving data: {e}")  # if there is an error, print out the error message
+        print(f"\nError saving data: {e}")  # if there is an error, print out the error message
 
 def read_from_csv(filename):
-    """读取CSV文件中的数据并返回一个DataFrame"""
+    """read the data from a CSV file and return it as a DataFrame"""
     try:
         return pd.read_csv(filename, dtype=str)  # read the CSV file in string format
     except FileNotFoundError:
@@ -100,89 +100,88 @@ def calculate_tax_relief(user_id, ic):
     tax_relief = 0
 
     # Step 1: annual income
-    income = float(input("Please enter your annual income (RM): "))
+    income = float(input("\nPlease enter your annual income (RM): "))
 
     if income <= 9000:
         print("Your annual income is RM 9000 or less, you do not need to pay tax.")
         print("Tax payable: RM 0")
         return
 
-    # 基本个人减免
+    # basic tax relief
     tax_relief += 9000
 
-    # Step 2: 是否有配偶
-    print("你是否有配偶？")
-    print("1. 有")
-    print("2. 没有")
-    has_spouse = input("请选择（1或2）：").strip()
+    # Step 2: ask if the user has a spouse
+    print("\nAre you married?")
+    print("1. Yes")
+    print("2. No")
+    has_spouse = input("Please select (1 or 2): ").strip()
     if has_spouse == '1':
-        spouse_income = float(input("请输入你配偶的年收入（RM）："))
+        spouse_income = float(input("\nPlease enter your spouse's income per year (RM): "))
         if spouse_income <= 4000:
             tax_relief += 4000
 
-        # Step 3: 有几个孩子
-        num_children = int(input("你有几个孩子？（最多可申报12人）："))
+        # Step 3: how many children
+        num_children = int(input("\nHow many children do you have? (maximum can be up to 12): "))
         if num_children > 12:
             num_children = 12
         tax_relief += num_children * 8000
 
-    # Step 4: 是否有严重疾病
-    print("你、你的配偶或孩子是否有严重疾病？")
-    print("1. 有")
-    print("2. 没有")
-    has_serious_illness = input("请选择（1或2）：").strip()
+    # Step 4: serious illness 
+    print("\nDo you, your spouse, or your children have any serious illness?")
+    print("1. Yes")
+    print("2. No")
+    has_serious_illness = input("Please select (1 or 2): ").strip()
     if has_serious_illness == '1':
-        medical_expense = float(input("请输入医疗费用（最高 RM8,000）："))
+        medical_expense = float(input("\nPlease enter your medical expenses (maximum relief RM8,000): "))
         tax_relief += min(medical_expense, 8000)
 
-    # Step 5: 生活用品支出
-    lifestyle_expense = float(input("请输入你一年内的生活用品支出（书籍、运动、电脑、网络等，最高 RM2,500）："))
+    # Step 5: Lifestyle expenses
+    lifestyle_expense = float(input("\nPlease enter your lifestyle expenses (Books, Sports, Computer, Internet, etc., maximum RM2,500): ")) 
     tax_relief += min(lifestyle_expense, 2500)
 
-    # Step 6: 教育费用
-    education_expense = float(input("你是否有读大学或专业课程？请输入学费金额（最高 RM7,000）："))
+    # Step 6: education expenses
+    education_expense = float(input("\nPlease enter your education expenses (maximum RM7,000): "))
     tax_relief += min(education_expense, 7000)
 
-    # Step 7: 父母赡养
-    print("你的父母还健在吗？")
-    print("1. 是")
-    print("2. 否")
-    has_parents = input("请选择（1或2）：").strip()
+    # Step 7: Parental relief
+    print("\nDo your parents still are alive?")
+    print("1. Yes")
+    print("2. No")
+    has_parents = input("Please select (1 or 2): ").strip()
     if has_parents == '1':
-        father_age = int(input("你父亲的年龄是？"))
-        mother_age = int(input("你母亲的年龄是？"))
+        father_age = int(input("\nPlease enter your father's age: "))
+        mother_age = int(input("Please enter your mother's age: "))
 
         parental_relief = 0
 
         if father_age >= 60:
-            father_income = float(input("你父亲的年收入是多少？"))
+            father_income = float(input("\nPlease enter your father's annual income (RM): "))
             if father_income <= 24000:
                 parental_relief += 2500
 
         if mother_age >= 60:
-            mother_income = float(input("你母亲的年收入是多少？"))
+            mother_income = float(input("Please enter your mother's annual income (RM): "))
             if mother_income <= 24000:
                 parental_relief += 2500
 
         tax_relief += parental_relief
 
-    # 最后计算
+    # Final Calculation
     payable_tax = calculate_tax(income, tax_relief)
     
-    print("\n----- 税务减免计算结果 -----")
-    
-
+    print("\n\n----- Tax Calculation Result -----")
     print(f"Annual income：RM {income:.2f}")
     print(f"Tax relief amount：RM {tax_relief:.2f}")
     print(f"Taxable income：RM {income-tax_relief:.2f}")
     print(f"Payable tax：RM {max(payable_tax,0):.2f}")
+    print("----------------------------------")
     if payable_tax <= 0:
         payable_tax = 0
-        print("You do not need to pay tax. This calculation is only for reference. \n Please refer to the official government website for more details.")
+        print("\nYou do not need to pay tax. This calculation is only for reference.\nPlease refer to the official government website for more details.")
     else:
-        print("You need to pay tax. This calculation is only for reference.")
+        print("\nYou need to pay tax. This calculation is only for reference.")
         print("For further details, please refer to the official government website.")
-    print("--------------------------")
+    print("-----------------------------------")
     
     data = {
         'UserID': user_id,
@@ -193,3 +192,4 @@ def calculate_tax_relief(user_id, ic):
     }
 
     save_to_csv(data)
+    print("\nScroll up a bit to see your tax records.")
