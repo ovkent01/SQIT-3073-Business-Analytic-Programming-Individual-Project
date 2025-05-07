@@ -76,7 +76,7 @@ python main.py
 
 ## Author
 - Vincent Ooi Jing Kent
-\nUndergraduate Student Project
+- Undergraduate Student Project
 - For academic use only.
 
 
